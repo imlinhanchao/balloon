@@ -1,0 +1,44 @@
+﻿<html>
+<head>
+<title>表单验证提示框</title>
+<link rel="stylesheet" href="message.css"/>
+<script type="text/javascript" src="message.js"></script>
+<script type="text/javascript">
+
+window.onload = function()
+{
+	document.getElementById("sb").onclick = show;
+	document.getElementById("re").onclick = remove;
+	document.getElementById("scr").onclick = scrolls;
+}
+var Box;
+remove = function()
+{
+	if(Box instanceof MessageBox) Box.Remove(); // Remove MessageBox
+} 
+
+show = function()
+{
+	var test = document.getElementById("test");
+	Box = new MessageBox(test, 1, "Test Message..", 50, 10, 5000, true);
+	Box.Show(); // show the MessageBox
+}
+
+scrolls = function()
+{
+	var test = document.getElementById("scrtest");
+	// MessageBox(element, id, message, left, top, timeout, scroll)
+	var Scr = new MessageBox(test, 2, "Test Message..", 50, 10, null, true); // null or undefined means not set the value.
+	Scr.message = "Scroll Test Message.."; // You can reset the value
+	Scr.Show(); // show the MessageBox
+}
+</script>
+
+</head>
+<body>
+	<div>表单: <input type="text" id="test" name="test"/> 
+	<input id="re" type="button" value="Remove" /> <input id="sb" type="button" value="Submit" /></div>
+	<input id="scr" type="button" value="Scroll" />
+	<div style="_vertical-align:top;*vertical-align:top;">滚动表单: <input type="text" id="scrtest" name="test" style="margin:1114px 0;"/> </div>
+</body>
+</html>
