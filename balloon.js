@@ -122,7 +122,7 @@ balloon.prototype = {
 		{
 			node.parentNode.removeChild(node);
 			if(this._timeouter > 0) clearTimeout(this._timeouter);
-			if(this._timerScroll > 0) clearTimeout(this._timerScroll);
+			if(this._timerScroll > 0) clearInterval(this._timerScroll);
 			return true;
 		}
 		if(node)
