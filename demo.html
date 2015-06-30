@@ -1,8 +1,8 @@
 ﻿<html>
 <head>
 <title>表单验证提示框</title>
-<link rel="stylesheet" href="message.css"/>
-<script type="text/javascript" src="message.js"></script>
+<link rel="stylesheet" href="balloon.css"/>
+<script type="text/javascript" src="balloon.js"></script>
 <script type="text/javascript">
 
 window.onload = function()
@@ -11,26 +11,26 @@ window.onload = function()
 	document.getElementById("re").onclick = remove;
 	document.getElementById("scr").onclick = scrolls;
 }
-var Box;
+var ball;
 remove = function()
 {
-	if(Box instanceof MessageBox) Box.Remove(); // Remove MessageBox
+	if(ball instanceof balloon) ball.Remove(); // Remove balloon
 } 
 
 show = function()
 {
 	var test = document.getElementById("test");
-	Box = new MessageBox(test, 1, "Test Message..", 50, 10, 5000, true);
-	Box.Show(); // show the MessageBox
+	ball = new balloon(test, 1, "Test balloon..", 50, 10, 5000, true);
+	ball.Show(); // show the balloon
 }
 
 scrolls = function()
 {
 	var test = document.getElementById("scrtest");
-	// MessageBox(element, id, message, left, top, timeout, scroll)
-	var Scr = new MessageBox(test, 2, "Test Message..", 50, 10, null, true); // null or undefined means not set the value.
-	Scr.message = "Scroll Test Message.."; // You can reset the value
-	Scr.Show(); // show the MessageBox
+	// balloon(element, id, balloon, left, top, timeout, scroll)
+	var Scr = new balloon(test, 2, "Test balloon..", 50, 10, null, true); // null or undefined means not set the value.
+	Scr.balloon = "Scroll Test balloon.."; // You can reset the value
+	Scr.Show(); // show the balloon
 }
 </script>
 

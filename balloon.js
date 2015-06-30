@@ -12,22 +12,22 @@
 |	// 获取目标元素
 |	var test = document.getElementById("test"); 
 |	// 新建消息气泡对象
-|	var Box = new MessageBox(test, 1, "Test Message..", 50, 10, 5000, true); 
+|	var Box = new balloon(test, 1, "Test Message..", 50, 10, 5000, true); 
 |	Box.Show(); // 显示气泡，显示成功返回true。
 |	Box.Remove(); // 移除气泡(动画)，移除成功返回true。若不希望移除有动画效果，可传入参数false：Box.Remove(false);
 |	
 |	注意：
 |	1. 除了element与id外，其他属性均可不初始化；
 |	2. 不需初始化的属性，构造函数中可填写null，若后面参数均为null，可省略，
-|	例：var Box = new MessageBox(test, 1, "Test Message..");
+|	例：var Box = new balloon(test, 1, "Test Message..");
 |	3. 属性在new后仍可修改，通过 “对象名.属性名 = 值” 进行修改，例：Box.left = 10；
 |	若气泡已经显示，可通过再次调用Show函数刷新显示。
 |	4. 设定定时消失的气泡，计时时间从调用Show开始算起。若有多次调用Show(如上条)，
 |	每次调用都将重新计时；
-|	5. MessageBox弹出气泡后，可以使用MessageBox对象移除该气泡，也使用目标元素的box属性
-|	移除，box属性即MessageBox对象副本，每次调用Show后均会被更新。
+|	5. balloon弹出气泡后，可以使用balloon对象移除该气泡，也使用目标元素的box属性
+|	移除，box属性即balloon对象副本，每次调用Show后均会被更新。
 |---------------------------------------------------------------------------------------*/
-MessageBox = function(element, id, message, left, top, timeout, scroll)
+balloon = function(element, id, message, left, top, timeout, scroll)
 {
 	// Init value
 	this.timeout = -1;	// ms
@@ -47,65 +47,67 @@ MessageBox = function(element, id, message, left, top, timeout, scroll)
 	if(scroll != null && scroll != undefined) this.scroll = scroll;
 };
 
-MessageBox.prototype = {
+balloon.prototype = {
 
-	constructor : MessageBox,
+	constructor : balloon,
 	
 	_timeouter : -1,
+	_timerScroll : -1,
 	
 	Show : function()
 	{
 		if(!this.element) return false;
 		if(this.element.box)
 			this.element.box.Remove(true);
-		var megbox = document.createElement("div");
-		megbox.className = "megbox";
-		megbox.id = "megbox_" + this.id;
-		var megbox_top = document.createElement("div");
-		megbox_top.className = "megbox_top";
-		var megbox_meg = document.createElement("div");
-		megbox_meg.className = "megbox_meg";
-		var megbox_txt = document.createElement("div");
-		megbox_txt.className = "megbox_txt";
+		var balloon = document.createElement("div");
+		balloon.className = "balloon";
+		balloon.id = "balloon_" + this.id;
+		var balloon_top = document.createElement("div");
+		balloon_top.className = "balloon_top";
+		var balloon_meg = document.createElement("div");
+		balloon_meg.className = "balloon_meg";
+		var balloon_txt = document.createElement("div");
+		balloon_txt.className = "balloon_txt";
 		var megs=document.createTextNode(this.message);
 		
-		megbox.appendChild(megbox_top);
-		megbox.appendChild(megbox_meg);
-		megbox_meg.appendChild(megbox_txt);
-		megbox_txt.appendChild(megs);
+		balloon.appendChild(balloon_top);
+		balloon.appendChild(balloon_meg);
+		balloon_meg.appendChild(balloon_txt);
+		balloon_txt.appendChild(megs);
 		this.element.box = this;
 		
-		document.getElementsByTagName("body")[0].appendChild(megbox);
+		document.getElementsByTagName("body")[0].appendChild(balloon);
 		
 		var node_view = document.getElementView(this.element);
 		var node_top = document.getElementTop(this.element);
 		var node_left = document.getElementLeft(this.element);
 		
 		if(this.scroll){
-			var timer = setInterval(function(){
-				var top =  document.getScrollXY().top;
-				var left =  document.getScrollXY().left;
-				if(top >= node_top - 20 || left >= node_left - 20) 
-				{
-					clearInterval(timer);
-				}
-				else
-				{
-					top += 20;
-					left += 20;
-					scrollTo(left, top);
-				}
-			}, 10);
+            this._timerScroll = setInterval(function(){
+                var top =  node_top - 30 - document.getScrollXY().top;
+                var left = node_left - 30 - document.getScrollXY().left;
+                if(Math.abs(top) < 5 || Math.abs(left) < 5)
+                {
+                    clearInterval(this._timerScroll);
+                }
+                else
+                {
+                    top = document.getScrollXY().top + top / 5.0;
+                    left = document.getScrollXY().left + left / 5.0;
+                    scrollTo(left, top);
+                }
+            }, 10);
 		}
 		
-		megbox.style.top = (node_top + node_view.height + this.top) + "px";
-		megbox.style.left = (node_left + this.left) + "px";
+		balloon.style.top = (node_top + node_view.height + this.top) + "px";
+		balloon.style.left = (node_left + this.left) + "px";
 		
 		if(this.timeout > 0)
 		{
 			var mbox = this;
 			this._timeouter = setTimeout(function(){
 				mbox.Remove();
+				if(null != timer) clearInterval(timer);
 			}, this.timeout);
 		}
 		
@@ -115,11 +117,12 @@ MessageBox.prototype = {
 	Remove : function(unanimated)
 	{
 		var id = this.id;
-		var node = document.getElementById("megbox_" + id);
+		var node = document.getElementById("balloon_" + id);
 		if(node && unanimated) 
 		{
 			node.parentNode.removeChild(node);
 			if(this._timeouter > 0) clearTimeout(this._timeouter);
+			if(this._timerScroll > 0) clearTimeout(this._timerScroll);
 			return true;
 		}
 		if(node)
