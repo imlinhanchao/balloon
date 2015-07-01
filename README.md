@@ -46,6 +46,7 @@ ball.Remove();
 
 5. 弹出气泡后，可以使用`balloon`对象移除该气泡，也使用目标元素的ball属性移除，`ball`属性即`balloon`对象副本，每次调用`Show()`后均会被更新。例：
 	```javascript
-	(new balloon(document.getElementById("test"), 1, "Test Message..", 50, 10, 5000, true);).Show();
-	document.getElementById("test").ball.Remove();	
+	var test = document.getElementById("test");
+	(new balloon(test, 1, "Test Message..", 50, 10, 5000, true)).Show();
+	test.ball.Remove();	
 	```
