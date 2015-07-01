@@ -18,17 +18,17 @@ scroll	: 设置页面是否滚动到目标元素所在位置，默认为不滚�
 
 ##调用方法：
 
+``` javascript
 // 获取目标元素
-
 var test = document.getElementById("test"); 
-
 // 新建消息气泡对象
-
 var Box = new balloon(test, 1, "Test Message..", 50, 10, 5000, true); 
-
-Box.Show(); // 显示气泡，显示成功返回true。
-
-Box.Remove(); // 移除气泡(动画)，移除成功返回true。若不希望移除有动画效果，可传入参数false：Box.Remove(false);
+// 显示气泡，显示成功返回true。
+Box.Show(); 
+// 移除气泡(动画)，移除成功返回true。
+// 若不希望移除有动画效果，可传入参数false:Box.Remove(false);
+Box.Remove();
+```
 
 ##注意：
 
@@ -36,7 +36,7 @@ Box.Remove(); // 移除气泡(动画)，移除成功返回true。若不希望移
 
 2. 不需初始化的属性，构造函数中可填写null，若后面参数均为null，可省略，例：
 
-	```
+	``` javascript
 		var Box = new balloon(test, 1, "Test Message..");
 	```
 	
