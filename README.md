@@ -1,5 +1,8 @@
 #气泡表单提示控件
 
+本控件可用于显示表单控件气泡提示文本。
+![sample](http://segmentfault.com/img/bVbrGa)
+
 ##构造函数-参数说明：
 
 element	: 消息气泡提示所指向的网页元素，可通过`document.getElementById`等方法获取；
