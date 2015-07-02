@@ -54,12 +54,23 @@ balloon.prototype = {
 	_timeouter : -1,
 	_timerScroll : -1,
 	
-	Show : function()
+	Show : function(bRemove)
 	{
 		if(!this.element) return false;
 		if(this.element.ball)
 			this.element.ball.Remove(true);
-		var balloon = document.createElement("div");
+		
+		var balloon = document.getElementById("balloon_" + this.id)
+		if(bRemove != undefined && !bRemove && balloon) return false;
+		
+		// 移除相同Id气泡
+		if(balloon && balloon.element && balloon.element.ball)
+			balloon.element.ball.Remove(true);
+		else if(balloon)
+			balloon.parentNode.removeChild(balloon);
+		
+		// 生成气泡
+		balloon = document.createElement("div");
 		balloon.className = "balloon";
 		balloon.id = "balloon_" + this.id;
 		var balloon_top = document.createElement("div");
@@ -75,6 +86,7 @@ balloon.prototype = {
 		balloon_meg.appendChild(balloon_txt);
 		balloon_txt.appendChild(megs);
 		this.element.ball = this;
+		balloon.element = this.element;
 		
 		document.getElementsByTagName("body")[0].appendChild(balloon);
 		
@@ -82,13 +94,21 @@ balloon.prototype = {
 		var node_top = document.getElementTop(this.element);
 		var node_left = document.getElementLeft(this.element);
 		
+		// 设置气泡位置
+		balloon.style.top = (node_top + node_view.height + this.top) + "px";
+		balloon.style.left = (node_left + this.left) + "px";
+		
+		var mball = this;
+		// 设置滚动到焦点
 		if(this.scroll){
             this._timerScroll = setInterval(function(){
                 var top =  node_top - 30 - document.getScrollXY().top;
                 var left = node_left - 30 - document.getScrollXY().left;
                 if(Math.abs(top) < 5 || Math.abs(left) < 5)
                 {
-                    clearInterval(this._timerScroll);
+                    clearInterval(mball._timerScroll);
+					mball._timeouter = -1;
+					mball.element.focus();
                 }
                 else
                 {
@@ -99,15 +119,17 @@ balloon.prototype = {
             }, 10);
 		}
 		
-		balloon.style.top = (node_top + node_view.height + this.top) + "px";
-		balloon.style.left = (node_left + this.left) + "px";
-		
+		// 设置超时消失
 		if(this.timeout > 0)
 		{
-			var mball = this;
 			this._timeouter = setTimeout(function(){
 				mball.Remove();
-				if(null != timer) clearInterval(timer);
+				if(mball._timerScroll > 0)
+				{
+					clearInterval(mball._timerScroll);
+					mball._timerScroll = -1;
+				}
+				mball._timeouter = -1;
 			}, this.timeout);
 		}
 		
@@ -118,14 +140,29 @@ balloon.prototype = {
 	{
 		var id = this.id;
 		var node = document.getElementById("balloon_" + id);
+		
+		// 清除移除倒计时
+		if(this._timeouter > 0)
+		{
+			clearTimeout(this._timeouter);
+			this._timeouter = -1;
+		}
+		
+		// 清除滚动到焦点动作
+		if(this._timerScroll > 0)
+		{
+			clearInterval(this._timerScroll);
+			this._timerScroll = -1;
+		}
+		
+		// 无动画清除气泡
 		if(node && unanimated) 
 		{
 			node.parentNode.removeChild(node);
-			if(this._timeouter > 0) clearTimeout(this._timeouter);
-			if(this._timerScroll > 0) clearInterval(this._timerScroll);
 			return true;
 		}
-		if(node)
+		// 动画清除气泡
+		else if(node)
 		{
 			var h = document.getElementView(node.getElementsByTagName("div")[1]).height * 1.00;
 			var w = document.getElementView(node.getElementsByTagName("div")[1]).width * 1.00;
